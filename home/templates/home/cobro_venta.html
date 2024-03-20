@@ -1,0 +1,114 @@
+{% extends "./baseVendedor.html" %}
+
+{% block body %}
+    <title>Cobro de Venta</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        
+        .salir {
+            padding-top: 20px;
+            text-align: center;
+        }
+        
+        .cobro-form {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .cobro-form h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+    </style>
+
+<body>
+    <div class="cobro-form">
+        <h1 class="text-center">Cobro de Venta</h1>
+        
+
+        <div id="paso2">
+            <div class="form-group">
+                <label for="totalVenta">Total a Pagar:</label>
+                <input type="text" class="form-control" id="totalVenta" readonly>
+            </div>
+            <div class="form-group">
+                <label for="montoPagado">Monto Pagado:</label>
+                <input type="text" class="form-control" id="montoPagado" placeholder="Ingrese el monto pagado">
+            </div>
+            <div class="form-group">
+                <label for="cambio">Cambio a Devolver:</label>
+                <input type="text" class="form-control" id="cambio" readonly>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" onclick="calcularCambio()">Calcular Cambio</button>
+        </div>
+    </div>
+    
+
+    <script>
+        // Esta función obtiene el código de venta de la URL actual
+        function obtenerCodigoVentaDeURL() {
+            // Obtener la URL actual
+            var url = window.location.href;
+            // Buscar el patrón "/cobro_venta/###/", donde ### es el código de venta
+            var match = url.match(/\/cobro_venta\/(\d+)\/?$/);
+            if (match) {
+                // Si se encuentra un partido, devolver el código de venta
+                return match[1];
+            } else {
+                // Si no se encuentra un partido, devolver null
+                return null;
+            }
+        }
+    
+        function cargarTotalVenta() {
+            // Obtener el código de venta de la URL
+            var ventaCodigo = obtenerCodigoVentaDeURL();
+           
+            // Si se obtiene el código de venta de la URL, realizar la solicitud para obtener el total de la venta
+            if (ventaCodigo) {
+                var url = '/home/obtener_total_venta/' + ventaCodigo + '/';
+                fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalVenta').value = data.total_venta;
+                    
+                })
+                .catch(error => console.error('Error:', error));
+            } else {
+                // Si no se puede obtener el código de venta de la URL, mostrar un mensaje de error
+                console.error('No se pudo obtener el código de venta de la URL.');
+            }
+        }
+    
+        function calcularCambio() {
+            var totalVenta = parseFloat(document.getElementById('totalVenta').value);
+            var montoPagado = parseFloat(document.getElementById('montoPagado').value);
+            if (!isNaN(totalVenta) && !isNaN(montoPagado)) {
+                var cambio = montoPagado - totalVenta;
+                document.getElementById('cambio').value = cambio;
+            } else {
+                alert('Por favor ingrese un monto válido.');
+            }
+        }
+        
+        // Llamar a la función cargarTotalVenta cuando se cargue la página
+        window.onload = cargarTotalVenta;
+    
+    </script>
+    
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <div class="salir">
+        <a href="/home/venta/" id="Volver" class="btn btn-warning">Salir</a>
+    </div>
+</body>
+</html>
+{% endblock %}

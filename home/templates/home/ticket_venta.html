@@ -1,0 +1,98 @@
+{% extends "./baseVendedor.html" %}
+
+{% block body %}
+    <title>Ticket de Venta</title>
+    
+    <style>
+        .volver {
+            padding-top: 20px;
+            text-align: center;
+        }
+        .ticket {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .ticket h1 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .ticket p {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        .ticket ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .ticket li {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+        #descargarPDF {
+            display: block; /* Asegurarse de que el botón sea visible normalmente */
+        }
+        #cobrarVenta {
+            display: block; /* Asegurarse de que el botón sea visible normalmente */
+        }
+        
+        @media print {
+            #descargarPDF {
+                display: none; /* Ocultar el botón cuando se imprime */
+            }
+            #cobrarVenta {
+                display: none; /* Ocultar el botón cuando se imprime */
+            }
+            #Volver{
+                display: none; /* Ocultar el botón cuando se imprime */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ticket">
+        <h1 class="text-center">Ticket de Venta</h1>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>ID de Venta:</strong> {{ venta.codigo }}</p>
+            </div>
+            <div class="col-md-6">
+                <p class="text-md-right"><strong>Total de la Venta: $</strong> {{ venta.total_venta }}</p>
+            </div>
+        </div>
+
+        <h2>Productos Comprados:</h2>
+        <ul>
+            {% for venta_producto in productos_venta %}
+            <li>{{ venta_producto.producto.nombre }} - Cantidad: {{ venta_producto.cantidad }}</li>
+            {% endfor %}
+        </ul>
+        <div class="d-flex justify-content-between">
+            <button id="descargarPDF" class="btn btn-primary">Descargar PDF</button>
+            <a href="/home/cobro_venta/{{ venta.pk }}" id="cobrarVenta" class="btn btn-success">Cobrar</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('descargarPDF').addEventListener('click', function () {
+            // Agregar la clase downloading-pdf al body al hacer clic en el botón de descarga de PDF
+            document.body.classList.add('downloading-pdf');
+            // Imprimir el documento
+            window.print();
+            // Eliminar la clase downloading-pdf después de que se complete la impresión
+            setTimeout(function () {
+                document.body.classList.remove('downloading-pdf');
+            }, 1000); // Espera 1 segundo después de la impresión
+        });
+    </script>
+
+    <div class="volver">
+        
+        <a href="/home/venta/" id="Volver" class="btn btn-warning">Volver</a>
+    </div>
+</body>
+</html>
+{% endblock %}
